@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   ConnectButton,
   useCurrentAccount,
@@ -18,9 +18,6 @@ const NFT_IMAGE_URL =
 // Package ID from the deployed contract
 const PACKAGE_ID =
   "0xcbb141ec2c86792fc25af511f0bc610fe4d8a4f1520068b281e57d336d716893";
-
-// URL of the sponsorship service
-const SPONSOR_SERVICE_URL = 'http://localhost:3002';
 
 function App() {
   const currentAccount = useCurrentAccount();
