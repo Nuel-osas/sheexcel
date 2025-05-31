@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   useSuiClient,
   useCurrentAccount,
@@ -18,6 +18,7 @@ import {
 } from '../constants/raffle-config';
 import styled from "styled-components";
 
+// Styled Components
 const RaffleContainer = styled.div`
   margin-top: 2rem;
   padding: 1.5rem;
@@ -26,6 +27,21 @@ const RaffleContainer = styled.div`
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 1400px;
+  box-sizing: border-box;
+  
+  @media (max-width: 768px) {
+    padding: 1rem;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+    border-radius: 8px;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 0.8rem;
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+    width: calc(100% + 1rem);
+  }
 `;
 
 const RaffleTitle = styled.h2`
@@ -37,6 +53,7 @@ const RaffleSubtitle = styled.p`
   margin-bottom: 1rem;
   color: #9370db;
   font-style: italic;
+  font-size: clamp(0.9rem, 2.5vw, 1rem);
 `;
 
 const RaffleButton = styled.button`
@@ -49,6 +66,7 @@ const RaffleButton = styled.button`
   cursor: pointer;
   transition: background-color 0.3s;
   margin: 1rem 0;
+  width: auto;
 
   &:hover {
     background-color: #7d5dbe;
@@ -59,6 +77,17 @@ const RaffleButton = styled.button`
     opacity: 0.6;
     cursor: not-allowed;
   }
+  
+  @media (max-width: 768px) {
+    padding: 0.7rem 1.2rem;
+    font-size: 0.9rem;
+    width: 100%;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+  }
 `;
 
 const WinnersList = styled.div`
@@ -66,6 +95,14 @@ const WinnersList = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 1rem;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+  
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const WinnerCard = styled.div`
@@ -75,6 +112,15 @@ const WinnerCard = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  
+  @media (max-width: 768px) {
+    padding: 0.8rem;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 0.8rem;
+    width: 100%;
+  }
 `;
 
 const WinnerAddress = styled.div`
@@ -163,23 +209,137 @@ const StatsContainer = styled.div`
   padding: 1rem;
   background-color: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
+  
+  @media (max-width: 768px) {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  @media (max-width: 480px) {
+    flex-direction: column;
+    align-items: center;
+  }
 `;
 
 const StatItem = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 0.5rem 1rem;
+  
+  @media (max-width: 768px) {
+    flex: 1 0 45%;
+  }
+  
+  @media (max-width: 480px) {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
 `;
 
 const StatLabel = styled.div`
   font-size: 0.9rem;
-  color: #ff69b4;
+  color: #9370db;
   margin-bottom: 0.3rem;
 `;
 
 const StatValue = styled.div`
   font-size: 1.2rem;
-  font-weight: 600;
+  font-weight: bold;
+  color: #ff69b4;
+`;
+
+const AddressLink = styled.a`
+  color: #9370db;
+  text-decoration: none;
+  transition: color 0.3s;
+  word-break: break-all;
+  
+  &:hover {
+    color: #ff69b4;
+    text-decoration: underline;
+  }
+`;
+
+const CopyButton = styled.button`
+  background-color: transparent;
+  border: 1px solid #9370db;
+  color: #9370db;
+  border-radius: 4px;
+  padding: 0.3rem 0.6rem;
+  margin-top: 0.5rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.3s;
+  
+  &:hover {
+    background-color: rgba(147, 112, 219, 0.1);
+  }
+  
+  &:active {
+    transform: scale(0.95);
+  }
+`;
+
+const ErrorMessage = styled.div`
+  color: #ff4d4d;
+  background-color: rgba(255, 77, 77, 0.1);
+  padding: 1rem;
+  border-radius: 8px;
+  margin: 1rem 0;
+  border: 1px solid rgba(255, 77, 77, 0.3);
+`;
+
+const SectionHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+`;
+
+const ToggleButton = styled.button`
+  background-color: transparent;
+  border: 1px solid #9370db;
+  color: #9370db;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background-color: rgba(147, 112, 219, 0.1);
+  }
+  
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(147, 112, 219, 0.3);
+  }
+  
+  @media (max-width: 480px) {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+  
+  svg {
+    transition: transform 0.3s ease;
+  }
+`;
+
+const SectionContent = styled.div<{ isOpen: boolean }>`
+  display: ${props => props.isOpen ? 'block' : 'none'};
+  animation: ${props => props.isOpen ? 'fadeIn 0.3s ease' : 'none'};
+  margin-top: 1rem;
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 `;
 
 const RaffleSystem: React.FC = () => {
@@ -202,290 +362,126 @@ const RaffleSystem: React.FC = () => {
   const [registryId, setRegistryId] = useState<string>(NFT_OWNER_REGISTRY_ID);
   const [raffleResultId, setRaffleResultId] = useState<string>(RAFFLE_RESULT_ID);
   const [registryInitialized, setRegistryInitialized] = useState(true); // Registry is already initialized
+  
+  // State for dropdown toggles - both hidden by default
+  const [isWinnersOpen, setIsWinnersOpen] = useState(false);
+  const [isOwnersOpen, setIsOwnersOpen] = useState(false);
 
-  // Debug effect to log the permanent owners when component mounts
-  useEffect(() => {
-    console.log("Using permanent list of NFT owners:", owners);
-    console.log(`Total NFT owners: ${owners.length}`);
+  // Check if current user is admin
+  const isAdmin = currentAccount && currentAccount.address === ADMIN_ADDRESS;
 
-    // Log each owner for debugging
-    owners.forEach((owner, index) => {
-      console.log(`Owner ${index + 1}: ${owner}`);
-    });
-
-    // Check if registry exists and fetch raffle results when component mounts
-    checkRegistryStatus();
-    fetchRaffleResults();
-  }, []);
-
-  // Check if the owner registry has been initialized on-chain
-  const checkRegistryStatus = async () => {
-    try {
-      // Query for NFTOwnerRegistry object
-      const objects = await suiClient.getOwnedObjects({
-        owner: RAFFLE_PACKAGE_ID,
-        options: { showContent: true },
-        filter: { StructType: `${RAFFLE_PACKAGE_ID}::raffle::NFTOwnerRegistry` },
-      });
-
-      if (objects.data && objects.data.length > 0) {
-        // Found registry
-        const registry = objects.data[0];
-        setRegistryId(registry.data?.objectId || "");
-
-        // Check if it's initialized with owners
-        if (registry.data?.content) {
-          const content = registry.data.content as any;
-          if (content.fields && content.fields.finalized) {
-            setRegistryInitialized(true);
-            console.log("Registry is initialized and finalized");
-          } else {
-            console.log("Registry exists but is not finalized");
-          }
-        }
-      } else {
-        console.log("Registry not found, will need to be created");
-      }
-    } catch (err) {
-      console.error("Error checking registry status:", err);
-    }
-  };
-
-  // Check if current account is admin (simplified check - would need proper verification)
-  const isAdmin = () => {
-    // Replace with the actual admin address for the SheExcels NFT
-    const adminAddress = ADMIN_ADDRESS; // Package publisher
-    return currentAccount?.address === adminAddress;
-  };
-
-  // Fetch past raffle results from on-chain storage
-  const fetchRaffleResults = async () => {
-    try {
-      // Query for RaffleResult objects using getOwnedObjects instead of queryObjects
-      const raffleResultObjects = await suiClient.getOwnedObjects({
-        owner: "Shared",
-        options: { showContent: true },
-        filter: { StructType: `${RAFFLE_PACKAGE_ID}::raffle::RaffleResult` },
-      });
-
-      if (raffleResultObjects.data && raffleResultObjects.data.length > 0) {
-        // Get the most recent raffle result
-        const latestRaffle = raffleResultObjects.data[0];
-        if (latestRaffle.data?.content) {
-          const content = latestRaffle.data.content as any;
-          if (content.fields) {
-            const winners = content.fields.winners as string[];
-            const timestamp = content.fields.timestamp as string;
-            const raffleId = content.fields.raffle_id as string;
-
-            setRaffleResultId(latestRaffle.data.objectId);
-            setOnchainWinners(winners);
-            setLastRaffleTimestamp(
-              new Date(Number(timestamp) * 1000).toLocaleString()
-            );
-            setWinners(winners); // Also update the UI winners
-            setRaffleStatus("success"); // Mark as successful since we found results
-
-            console.log(
-              `Found raffle result with ID ${raffleId} and ${winners.length} winners`
-            );
-          }
-        }
-      } else {
-        console.log("No raffle results found");
-      }
-    } catch (err) {
-      console.error("Error fetching raffle results:", err);
-      // If we can't fetch on-chain winners, we'll fall back to client-side selection
-    }
-  };
-
-  // Initialize the owner registry with the permanent list of 47 owners (admin only)
-  const initializeOwnerRegistry = async () => {
+  // Function to initialize the owner registry
+  const initializeRegistry = async () => {
     if (!currentAccount) {
-      setError("You need to connect your wallet first");
+      setError("Please connect your wallet");
       return;
     }
 
-    if (!isAdmin()) {
-      setError("Only the admin can initialize the registry");
-      return;
-    }
-
-    if (owners.length === 0) {
-      setError("No NFT owners available");
+    if (!isAdmin) {
+      setError("Only admin can initialize the registry");
       return;
     }
 
     setIsRaffleLoading(true);
-    setRaffleStatus("pending");
     setError("");
 
     try {
-      // Use the hardcoded RaffleCap ID from our constants file
-      const adminCapId = RAFFLE_CAP_ID;
-      console.log("Using RaffleCap:", adminCapId);
-
-      // Use the hardcoded NFT_OWNER_REGISTRY_ID from our constants file
-      const registryId = NFT_OWNER_REGISTRY_ID;
-      console.log("Using NFT Owner Registry:", registryId);
-      setRegistryId(registryId);
-
-      // Create transaction block to initialize the registry
-      const txb = new TransactionBlock();
-
-      // Call the initialize_owner_registry function
-      txb.moveCall({
+      const tx = new TransactionBlock();
+      
+      tx.moveCall({
         target: `${RAFFLE_PACKAGE_ID}::raffle::initialize_owner_registry`,
         arguments: [
-          txb.object(adminCapId), // Admin cap
-          txb.object(registryId), // Registry object
-          txb.pure(owners), // List of 47 owner addresses
-          txb.pure([]), // Empty arguments for ctx
+          tx.object(RAFFLE_CAP_ID),
+          tx.object(NFT_OWNER_REGISTRY_ID),
+          tx.pure(owners),
         ],
       });
 
-      // Sign and execute the transaction
-      const response = await signAndExecute({
-        transactionBlock: txb,
-      });
-
-      console.log("Registry initialization transaction executed:", response);
-
-      // Now finalize the registry
-      const txbFinalize = new TransactionBlock();
-
-      txbFinalize.moveCall({
-        target: `${RAFFLE_PACKAGE_ID}::raffle::finalize_owner_registry`,
-        arguments: [
-          txbFinalize.object(adminCapId), // Admin cap
-          txbFinalize.object(registryId), // Registry object
-          txbFinalize.pure([]), // Empty arguments for ctx
-        ],
-      });
-
-      const finalizeResponse = await signAndExecute({
-        transactionBlock: txbFinalize,
-      });
-
-      console.log(
-        "Registry finalization transaction executed:",
-        finalizeResponse
+      await signAndExecute(
+        {
+          transactionBlock: tx,
+        },
+        {
+          onSuccess: (result) => {
+            console.log("Registry initialized successfully:", result);
+            setRegistryInitialized(true);
+            setRaffleStatus("success");
+          },
+          onError: (err) => {
+            console.error("Error initializing registry:", err);
+            setError(`Error initializing registry: ${err.message}`);
+            setRaffleStatus("error");
+          },
+        }
       );
-      setRegistryInitialized(true);
-      setRaffleStatus("success");
-    } catch (err) {
-      console.error("Error initializing registry:", err);
-      setError(
-        `Error initializing registry: ${
-          err instanceof Error ? err.message : String(err)
-        }`
-      );
+    } catch (err: any) {
+      console.error("Error creating transaction:", err);
+      setError(`Error creating transaction: ${err.message}`);
       setRaffleStatus("error");
     } finally {
       setIsRaffleLoading(false);
     }
   };
 
-  // Run raffle using on-chain randomness (for admin)
-  const runOnchainRaffle = async () => {
+  // Function to run the raffle
+  const runRaffle = async () => {
     if (!currentAccount) {
-      setError("You need to connect your wallet first");
+      setError("Please connect your wallet");
       return;
     }
 
-    if (!isAdmin()) {
-      setError("Only the admin can run the on-chain raffle");
-      return;
-    }
-
-    if (owners.length === 0) {
-      setError("No NFT owners available");
+    if (!isAdmin) {
+      setError("Only admin can run the raffle");
       return;
     }
 
     if (!registryInitialized) {
-      setError("Owner registry must be initialized first");
+      setError("Registry must be initialized first");
       return;
     }
 
     setIsRaffleLoading(true);
-    setRaffleStatus("pending");
     setError("");
+    setRaffleStatus("pending");
 
     try {
-      // Use the hardcoded RaffleCap ID from our constants file
-      const adminCapId = RAFFLE_CAP_ID;
-      console.log("Using RaffleCap:", adminCapId);
-
-      // Determine how many winners to select (15 or less if there aren't enough owners)
-      const numWinners = Math.min(15, owners.length);
-
-      // Create transaction block
-      const txb = new TransactionBlock();
-
-      // Call the run_raffle function
-      txb.moveCall({
+      const tx = new TransactionBlock();
+      
+      tx.moveCall({
         target: `${RAFFLE_PACKAGE_ID}::raffle::run_raffle`,
         arguments: [
-          txb.object(adminCapId), // Admin cap
-          txb.object(registryId), // Registry object
-          txb.pure(numWinners), // Number of winners to select
-          txb.pure([]), // Empty arguments for ctx
+          tx.object(RAFFLE_CAP_ID),
+          tx.object(NFT_OWNER_REGISTRY_ID),
+          tx.pure(WINNER_COUNT),
         ],
       });
 
-      // Sign and execute the transaction
-      const response = await signAndExecute({
-        transactionBlock: txb,
-      });
-
-      console.log("Raffle transaction executed:", response);
-      setRaffleStatus("success");
-
-      // Fetch the updated winners from on-chain
-      await fetchRaffleResults();
-    } catch (err) {
-      console.error("Error running on-chain raffle:", err);
-      setError(
-        `Error running on-chain raffle: ${
-          err instanceof Error ? err.message : String(err)
-        }`
+      await signAndExecute(
+        {
+          transactionBlock: tx,
+        },
+        {
+          onSuccess: (result) => {
+            console.log("Raffle completed successfully:", result);
+            setRaffleResultId(result.digest);
+            setRaffleStatus("success");
+            setLastRaffleTimestamp(new Date().toISOString());
+            
+            // In a real implementation, we would fetch the winners from the blockchain
+            // But for now, we'll just use our hardcoded winners
+            setOnchainWinners(RAFFLE_WINNERS);
+          },
+          onError: (err) => {
+            console.error("Error running raffle:", err);
+            setError(`Error running raffle: ${err.message}`);
+            setRaffleStatus("error");
+          },
+        }
       );
+    } catch (err: any) {
+      console.error("Error creating transaction:", err);
+      setError(`Error creating transaction: ${err.message}`);
       setRaffleStatus("error");
-    } finally {
-      setIsRaffleLoading(false);
-    }
-  };
-
-  // Run client-side raffle (for non-admin users or as fallback)
-  const runClientRaffle = () => {
-    if (owners.length === 0) {
-      setError("No NFT owners found. Please fetch owners first.");
-      return;
-    }
-
-    setIsRaffleLoading(true);
-    setError("");
-
-    try {
-      // Shuffle owners array randomly using Fisher-Yates algorithm
-      const shuffled = [...owners];
-      for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-      }
-
-      // Select the first 15 (or less) as winners
-      const selectedWinners = shuffled.slice(0, Math.min(15, owners.length));
-      setWinners(selectedWinners);
-    } catch (err) {
-      console.error("Error running client-side raffle:", err);
-      setError(
-        `Error running client-side raffle: ${
-          err instanceof Error ? err.message : String(err)
-        }`
-      );
     } finally {
       setIsRaffleLoading(false);
     }
@@ -493,10 +489,14 @@ const RaffleSystem: React.FC = () => {
 
   // Format address for display
   const formatAddress = (address: string) => {
-    if (address.length <= 10) return address;
     return `${address.substring(0, 6)}...${address.substring(
       address.length - 4
     )}`;
+  };
+
+  // Copy address to clipboard
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
   };
 
   return (
@@ -505,224 +505,157 @@ const RaffleSystem: React.FC = () => {
       <RaffleSubtitle>
         {RAFFLE_METADATA.description} - {RAFFLE_METADATA.date}
       </RaffleSubtitle>
-      <div style={{ marginBottom: '1rem', padding: '0.8rem', backgroundColor: 'rgba(147, 112, 219, 0.1)', borderRadius: '8px', border: '1px solid #9370db' }}>
-        <p style={{ fontWeight: 'bold', color: '#ff69b4' }}>✨ Raffle Completed On-Chain ✨</p>
-        <p>15 winners were selected from {owners.length} NFT holders using {RAFFLE_METADATA.randomnessSource}</p>
-        <p>Results are permanently stored on the Sui blockchain</p>
-        <p>Raffle Result Object ID: <a href={`https://suiexplorer.com/object/${RAFFLE_RESULT_ID}?network=mainnet`} target="_blank" rel="noopener noreferrer" style={{ color: '#9370db' }}>{RAFFLE_RESULT_ID}</a></p>
-      </div>
-
-      <StatsContainer>
-        <StatItem>
-          <StatLabel>Total NFT Owners</StatLabel>
-          <StatValue>{owners.length}</StatValue>
-          <div
-            style={{
-              fontSize: "0.7rem",
-              color: "#9370DB",
-              marginTop: "0.2rem",
-            }}
-          >
-            Live Data
-          </div>
-        </StatItem>
-        <StatItem>
-          <StatLabel>Winners Selected</StatLabel>
-          <StatValue>{winners.length} / 15</StatValue>
-        </StatItem>
-      </StatsContainer>
-
+      
+      {/* Raffle Completion Banner */}
       <div style={{ 
         backgroundColor: 'rgba(147, 112, 219, 0.1)', 
         border: '1px solid #9370DB', 
         borderRadius: '8px', 
         padding: '1rem', 
         marginBottom: '1.5rem', 
-        textAlign: 'center' 
+        textAlign: 'center',
+        fontSize: 'clamp(0.9rem, 2.5vw, 1rem)'
       }}>
-        <h3 style={{ color: '#9370DB', marginTop: 0 }}>🏆 Raffle Completed 🏆</h3>
-        <p>The on-chain raffle has been successfully completed on {RAFFLE_METADATA.date}.</p>
-        <p>15 winners were selected from 47 NFT owners using secure on-chain randomness.</p>
-        <p style={{ marginTop: '1rem', fontWeight: 'bold' }}>
+        <h3 style={{ 
+          color: '#9370DB', 
+          marginTop: 0,
+          fontSize: 'clamp(1.2rem, 4vw, 1.5rem)'
+        }}>🏆 Raffle Completed - Winners Selected 🏆</h3>
+        <p>On-chain raffle completed successfully! The results are now permanently recorded on the Sui blockchain.</p>
+        <p>The raffle was completed on {RAFFLE_METADATA.date}, selecting 15 winners from 47 NFT owners using secure on-chain randomness.</p>
+        <p style={{ 
+          marginTop: '1rem', 
+          fontWeight: 'bold',
+          fontSize: 'clamp(0.8rem, 2vw, 0.9rem)'
+        }}>
           Raffle Result Object ID: <br/>
           <a 
             href={`https://suiexplorer.com/object/${RAFFLE_RESULT_ID}?network=mainnet`} 
             target="_blank" 
             rel="noopener noreferrer" 
-            style={{ color: '#FF69B4', wordBreak: 'break-all' }}
+            style={{ 
+              color: '#FF69B4', 
+              wordBreak: 'break-all',
+              fontSize: 'clamp(0.7rem, 2vw, 0.85rem)',
+              display: 'inline-block',
+              maxWidth: '100%',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
+            }}
           >
             {RAFFLE_RESULT_ID}
           </a>
         </p>
       </div>
 
-      <RaffleButton
-        disabled={true}
-        style={{ opacity: 0.6, cursor: 'not-allowed' }}
-      >
-        Raffle Completed - Winners Selected
-      </RaffleButton>
+      {/* Raffle Stats */}
+      <StatsContainer>
+        <StatItem>
+          <StatLabel>Total NFT Owners</StatLabel>
+          <StatValue>{owners.length}</StatValue>
+        </StatItem>
+        <StatItem>
+          <StatLabel>Winners Selected</StatLabel>
+          <StatValue>{winners.length}</StatValue>
+        </StatItem>
+        <StatItem>
+          <StatLabel>Raffle Date</StatLabel>
+          <StatValue>{RAFFLE_METADATA.date}</StatValue>
+        </StatItem>
+      </StatsContainer>
 
+      {/* Error Display */}
+      {error && <ErrorMessage>{error}</ErrorMessage>}
 
+      {/* Admin Actions - Disabled since raffle is completed */}
+      {isAdmin && (
+        <div style={{ marginTop: '1rem', marginBottom: '1.5rem' }}>
+          <RaffleButton 
+            onClick={initializeRegistry} 
+            disabled={isRaffleLoading || raffleStatus === "success"}
+          >
+            Initialize Owner Registry
+          </RaffleButton>
+          <RaffleButton 
+            onClick={runRaffle} 
+            disabled={isRaffleLoading || !registryInitialized || raffleStatus === "success"}
+            style={{ marginLeft: '1rem' }}
+          >
+            Run Raffle
+          </RaffleButton>
+        </div>
+      )}
 
+      {/* Winners Section */}
       {raffleStatus === "success" && (
-        <div
-          style={{
-            color: "#4CAF50",
-            margin: "1rem 0",
-            padding: "0.8rem",
-            backgroundColor: "rgba(76, 175, 80, 0.1)",
-            borderRadius: "8px",
-          }}
-        >
-          On-chain raffle completed successfully! The results are now
-          permanently recorded on the Sui blockchain.
-        </div>
-      )}
-
-      {raffleStatus === "pending" && (
-        <div
-          style={{
-            color: "#FF9800",
-            margin: "1rem 0",
-            padding: "0.8rem",
-            backgroundColor: "rgba(255, 152, 0, 0.1)",
-            borderRadius: "8px",
-          }}
-        >
-          Processing on-chain raffle... Please confirm the transaction in your
-          wallet.
-        </div>
-      )}
-
-      {error && (
-        <div
-          style={{
-            color: "#f44336",
-            margin: "1rem 0",
-            padding: "0.8rem",
-            backgroundColor: "rgba(255, 0, 0, 0.1)",
-            borderRadius: "8px",
-          }}
-        >
-          {error}
-        </div>
-      )}
-
-      <div>
-        <h3 style={{ color: '#ff69b4', marginTop: '2rem', marginBottom: '1rem', borderBottom: '1px solid rgba(147, 112, 219, 0.3)', paddingBottom: '0.5rem' }}>
-          🏆 Official Raffle Winners (15) 🏆
-        </h3>
-        <WinnersList>
-          {winners.map((winner, index) => (
-            <WinnerCard key={index} style={{ border: '1px solid rgba(147, 112, 219, 0.3)', backgroundColor: 'rgba(255, 105, 180, 0.05)' }}>
-              <div style={{ fontWeight: 'bold', color: '#ff69b4', fontSize: '1.1rem' }}>Winner #{index + 1}</div>
-              <WinnerAddress>
-                <a
-                  href={`https://suiexplorer.com/address/${winner}?network=mainnet`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: '#9370db', textDecoration: 'none', fontWeight: 'bold' }}
-                >
-                  {winner.substring(0, 10)}...{winner.substring(winner.length - 10)}
-                </a>
-              </WinnerAddress>
-            </WinnerCard>
-          ))}
-        </WinnersList>
-      </div>
-
-      {owners.length > 0 && (
         <>
-          <RaffleTitle>All NFT Owners ({owners.length})</RaffleTitle>
-          <OwnersList>
-            {owners.map((owner, index) => (
-              <OwnerItem key={owner}>
-                <div
-                  style={{
-                    fontWeight: "bold",
-                    marginBottom: "10px",
-                    fontSize: "1.1rem",
-                    color: "#FF69B4",
-                    textAlign: "center",
-                    padding: "5px 0",
-                    borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
-                  }}
-                >
-                  Owner #{index + 1}
-                </div>
-                <div
-                  style={{
-                    background: "rgba(0, 0, 0, 0.2)",
-                    padding: "10px",
-                    borderRadius: "8px",
-                    textAlign: "center",
-                    marginBottom: "12px",
-                    fontSize: "1rem",
-                  }}
-                >
-                  {formatAddress(owner)}
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    marginTop: "auto",
-                  }}
-                >
-                  <a
-                    href={`https://explorer.sui.io/address/${owner}?network=mainnet`}
+          <SectionHeader>
+            <RaffleTitle>Official Winners (15)</RaffleTitle>
+            <ToggleButton onClick={() => setIsWinnersOpen(!isWinnersOpen)}>
+              {isWinnersOpen ? 'Hide Winners ▲' : 'Show Winners ▼'}
+            </ToggleButton>
+          </SectionHeader>
+          
+          <SectionContent isOpen={isWinnersOpen}>
+            <WinnersList>
+              {winners.map((winner, index) => (
+                <WinnerCard key={`winner-${index}`}>
+                  <div style={{ 
+                    backgroundColor: '#ff69b4', 
+                    color: 'white', 
+                    borderRadius: '50%', 
+                    width: '30px', 
+                    height: '30px', 
+                    display: 'flex', 
+                    justifyContent: 'center', 
+                    alignItems: 'center',
+                    marginBottom: '0.5rem'
+                  }}>
+                    {index + 1}
+                  </div>
+                  <WinnerAddress>
+                    <AddressLink 
+                      href={`https://suiexplorer.com/address/${winner}?network=mainnet`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {formatAddress(winner)}
+                    </AddressLink>
+                  </WinnerAddress>
+                  <CopyButton onClick={() => copyToClipboard(winner)}>
+                    Copy Address
+                  </CopyButton>
+                </WinnerCard>
+              ))}
+            </WinnersList>
+          </SectionContent>
+
+          {/* All NFT Owners Section */}
+          <SectionHeader>
+            <RaffleTitle>All NFT Owners ({owners.length})</RaffleTitle>
+            <ToggleButton onClick={() => setIsOwnersOpen(!isOwnersOpen)}>
+              {isOwnersOpen ? 'Hide Owners ▲' : 'Show Owners ▼'}
+            </ToggleButton>
+          </SectionHeader>
+          
+          <SectionContent isOpen={isOwnersOpen}>
+            <OwnersList>
+              {owners.map((owner, index) => (
+                <OwnerItem key={`owner-${index}`}>
+                  <AddressLink 
+                    href={`https://suiexplorer.com/address/${owner}?network=mainnet`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{
-                      color: "white",
-                      backgroundColor: "#9370DB",
-                      padding: "8px 12px",
-                      borderRadius: "6px",
-                      textDecoration: "none",
-                      fontSize: "0.9rem",
-                      fontWeight: "bold",
-                      transition: "all 0.3s ease",
-                      flex: "1",
-                      textAlign: "center",
-                      marginRight: "8px",
-                    }}
-                    onMouseOver={(e) =>
-                      (e.currentTarget.style.backgroundColor = "#7d5dbe")
-                    }
-                    onMouseOut={(e) =>
-                      (e.currentTarget.style.backgroundColor = "#9370DB")
-                    }
                   >
-                    View on Explorer
-                  </a>
-                  <button
-                    onClick={() => navigator.clipboard.writeText(owner)}
-                    style={{
-                      backgroundColor: "rgba(255, 255, 255, 0.1)",
-                      border: "none",
-                      borderRadius: "6px",
-                      padding: "8px",
-                      cursor: "pointer",
-                      color: "white",
-                      transition: "all 0.3s ease",
-                    }}
-                    title="Copy address"
-                    onMouseOver={(e) =>
-                      (e.currentTarget.style.backgroundColor =
-                        "rgba(255, 255, 255, 0.2)")
-                    }
-                    onMouseOut={(e) =>
-                      (e.currentTarget.style.backgroundColor =
-                        "rgba(255, 255, 255, 0.1)")
-                    }
-                  >
-                    📋
-                  </button>
-                </div>
-              </OwnerItem>
-            ))}
-          </OwnersList>
+                    {formatAddress(owner)}
+                  </AddressLink>
+                  <CopyButton onClick={() => copyToClipboard(owner)}>
+                    Copy Address
+                  </CopyButton>
+                </OwnerItem>
+              ))}
+            </OwnersList>
+          </SectionContent>
         </>
       )}
     </RaffleContainer>
