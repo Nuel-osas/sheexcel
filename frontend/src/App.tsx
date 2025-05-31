@@ -270,11 +270,9 @@ function App() {
         <NFTDisplay imageUrl={mintedNFT.url} nftId={mintedNFT.id} />
       )}
       
-      {currentAccount && (
-        <div className="raffle-section">
-          <RaffleSystem />
-        </div>
-      )}
+      <div id="raffle-section" className="raffle-section">
+        <RaffleSystem />
+      </div>
     </div>
   );
 }

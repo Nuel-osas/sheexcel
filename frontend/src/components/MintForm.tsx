@@ -73,6 +73,9 @@ const MintForm: React.FC<MintFormProps> = ({ onMint, isLoading, isWalletConnecte
   const [name, setName] = useState('SheExcels Daily Event');
   const [description, setDescription] = useState('Proof of participation in the SheExcels Sui StartHERs onboarding event for women on Sui');
   const [eventDate, setEventDate] = useState('2025-05-31');
+  
+  // Raffle has been completed, minting is now closed
+  const mintingClosed = true;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,7 +83,30 @@ const MintForm: React.FC<MintFormProps> = ({ onMint, isLoading, isWalletConnecte
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <>
+      {mintingClosed && (
+        <div style={{
+          backgroundColor: 'rgba(255, 105, 180, 0.1)',
+          border: '1px solid #FF69B4',
+          borderRadius: '8px',
+          padding: '1rem',
+          marginBottom: '1.5rem',
+          textAlign: 'center'
+        }}>
+          <h3 style={{ color: '#FF69B4', marginTop: 0 }}>🎉 Minting Closed 🎉</h3>
+          <p>The SheExcelsNFT raffle has been successfully completed! 15 winners have been selected from 47 NFT owners using on-chain randomness.</p>
+          <p>Minting is now closed. Thank you to everyone who participated!</p>
+          <p style={{ marginTop: '1rem' }}>
+            <a 
+              href="#raffle-section" 
+              style={{ color: '#FF69B4', textDecoration: 'underline', fontWeight: 'bold' }}
+            >
+              View Raffle Results
+            </a>
+          </p>
+        </div>
+      )}
+      <Form onSubmit={handleSubmit}>
       <InputGroup>
         <Label htmlFor="name">Event Name</Label>
         <Input
@@ -115,9 +141,9 @@ const MintForm: React.FC<MintFormProps> = ({ onMint, isLoading, isWalletConnecte
 
       <MintButton 
         type="submit" 
-        disabled={isLoading || !isWalletConnected || alreadyMinted}
+        disabled={isLoading || !isWalletConnected || alreadyMinted || mintingClosed}
       >
-        {isLoading ? 'Minting...' : alreadyMinted ? 'Already Minted' : 'Mint NFT'}
+        {isLoading ? 'Minting...' : mintingClosed ? 'Minting Closed' : alreadyMinted ? 'Already Minted' : 'Mint NFT'}
       </MintButton>
       
       {!isWalletConnected && (
@@ -132,6 +158,7 @@ const MintForm: React.FC<MintFormProps> = ({ onMint, isLoading, isWalletConnecte
         </p>
       )}
     </Form>
+    </>
   );
 };
 
