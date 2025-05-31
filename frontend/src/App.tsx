@@ -9,6 +9,7 @@ import { TransactionBlock } from "@mysten/sui.js/transactions";
 import NFTDisplay from "./components/NFTDisplay";
 import MintForm from "./components/MintForm";
 import EventBanner from "./components/EventBanner";
+import RaffleSystem from "./components/RaffleSystem";
 import "@mysten/dapp-kit/dist/index.css";
 
 // NFT image IPFS URL
@@ -267,6 +268,12 @@ function App() {
 
       {mintedNFT && (
         <NFTDisplay imageUrl={mintedNFT.url} nftId={mintedNFT.id} />
+      )}
+      
+      {currentAccount && (
+        <div className="raffle-section">
+          <RaffleSystem />
+        </div>
       )}
     </div>
   );
