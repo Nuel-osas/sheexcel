@@ -532,61 +532,38 @@ const RaffleSystem: React.FC = () => {
         </StatItem>
       </StatsContainer>
 
-      {isAdmin() && !registryInitialized && (
-        <RaffleButton
-          onClick={initializeOwnerRegistry}
-          disabled={isRaffleLoading}
-        >
-          {isRaffleLoading
-            ? "Initializing Registry..."
-            : "Initialize Owner Registry"}
-        </RaffleButton>
-      )}
+      <div style={{ 
+        backgroundColor: 'rgba(147, 112, 219, 0.1)', 
+        border: '1px solid #9370DB', 
+        borderRadius: '8px', 
+        padding: '1rem', 
+        marginBottom: '1.5rem', 
+        textAlign: 'center' 
+      }}>
+        <h3 style={{ color: '#9370DB', marginTop: 0 }}>🏆 Raffle Completed 🏆</h3>
+        <p>The on-chain raffle has been successfully completed on {RAFFLE_METADATA.date}.</p>
+        <p>15 winners were selected from 47 NFT owners using secure on-chain randomness.</p>
+        <p style={{ marginTop: '1rem', fontWeight: 'bold' }}>
+          Raffle Result Object ID: <br/>
+          <a 
+            href={`https://suiexplorer.com/object/${RAFFLE_RESULT_ID}?network=mainnet`} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            style={{ color: '#FF69B4', wordBreak: 'break-all' }}
+          >
+            {RAFFLE_RESULT_ID}
+          </a>
+        </p>
+      </div>
 
       <RaffleButton
-        onClick={isAdmin() ? runOnchainRaffle : runClientRaffle}
-        disabled={
-          isRaffleLoading ||
-          owners.length === 0 ||
-          (isAdmin() && !registryInitialized)
-        }
+        disabled={true}
+        style={{ opacity: 0.6, cursor: 'not-allowed' }}
       >
-        {isRaffleLoading
-          ? "Running Raffle..."
-          : isAdmin()
-          ? "Select Winners On-Chain"
-          : "Preview Winners (Client-Side)"}
+        Raffle Completed - Winners Selected
       </RaffleButton>
 
-      {lastRaffleTimestamp && (
-        <div
-          style={{
-            fontSize: "0.9rem",
-            color: "#9370DB",
-            marginTop: "0.5rem",
-            textAlign: "center",
-            padding: "0.5rem",
-            backgroundColor: "rgba(255, 255, 255, 0.05)",
-            borderRadius: "8px",
-            marginBottom: "1rem",
-          }}
-        >
-          <span style={{ fontWeight: "bold" }}>Official Raffle Results</span>
-          <br />
-          Conducted on: {lastRaffleTimestamp}
-          <br />
-          {raffleResultId && (
-            <a
-              href={`https://explorer.sui.io/object/${raffleResultId}?network=mainnet`}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: "#FF69B4", textDecoration: "underline" }}
-            >
-              View on Sui Explorer
-            </a>
-          )}
-        </div>
-      )}
+
 
       {raffleStatus === "success" && (
         <div
