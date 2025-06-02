@@ -32,7 +32,7 @@ const RaffleContainer = styled.div`
   @media (max-width: 768px) {
     padding: 1rem;
     margin-top: 1rem;
-    margin-bottom: 2rem;
+    width: 100%;
     border-radius: 8px;
   }
   

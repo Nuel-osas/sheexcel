@@ -39,7 +39,19 @@ function App() {
     display: 'flex',
     justifyContent: 'flex-end',
     padding: '0.5rem',
-    marginBottom: '0.5rem'
+    marginBottom: '0.5rem',
+    width: '100%'
+  };
+  
+  // Style for the main app container
+  const appContainerStyle = {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    alignItems: 'center',
+    width: '100%',
+    minHeight: '100vh',
+    padding: '0 0.5rem',
+    boxSizing: 'border-box' as const
   };
   
   // Check if user already has a SheExcels NFT when wallet connects
@@ -229,7 +241,7 @@ function App() {
   };
 
   return (
-    <div className="container">
+    <div style={appContainerStyle}>
       <EventBanner />
 
       <div style={walletContainerStyle}>
